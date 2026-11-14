@@ -65,6 +65,11 @@ body {
 
 .status p { margin: 4px 0; }
 
+.karte h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.liste { margin: 0; padding-left: 20px; }
+.liste li { margin: 4px 0; }
+.leise { color: var(--text-leise); }
+
 .knopf {
   margin-top: 12px;
   background: var(--gruen);

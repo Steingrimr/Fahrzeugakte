@@ -2,6 +2,32 @@
 // Diese Datei zeigt nur an, ob die App online ist und ob der
 // Offline-Modus (Service Worker) läuft. Mehr passiert hier noch nicht.
 
+// 0) Gespeicherte Kategorien aus dem Browser-Speicher anzeigen
+//    (vorläufig, zum Testen des Speichers)
+async function zeigeKategorien() {
+  const liste = document.getElementById('kategorien-liste');
+  try {
+    const kategorien = await alleHolen('kategorien');
+    kategorien.sort((a, b) => a.reihenfolge - b.reihenfolge);
+    liste.innerHTML = '';
+    for (const k of kategorien) {
+      const eintrag = document.createElement('li');
+      eintrag.textContent = k.name;
+      if (k.beschreibung) {
+        const zusatz = document.createElement('span');
+        zusatz.className = 'leise';
+        zusatz.textContent = ' – ' + k.beschreibung;
+        eintrag.appendChild(zusatz);
+      }
+      liste.appendChild(eintrag);
+    }
+  } catch (fehler) {
+    liste.innerHTML = '<li>Speicher konnte nicht geöffnet werden.</li>';
+    console.error(fehler);
+  }
+}
+zeigeKategorien();
+
 // 1) Online / Offline anzeigen
 function zeigeVerbindung() {
   document.getElementById('online-status').textContent =

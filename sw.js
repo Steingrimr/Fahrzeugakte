@@ -1,12 +1,13 @@
 // Service Worker – sorgt dafür, dass die App offline startet.
 // WICHTIG: Bei jeder Änderung an den App-Dateien die Versionsnummer
 // erhöhen, damit Handy und Browser die neue Version laden.
-const CACHE_NAME = 'fahrzeugakte-v0.1.0';
+const CACHE_NAME = 'fahrzeugakte-v0.2.0';
 
 const APP_DATEIEN = [
   './',
   'index.html',
   'style.css',
+  'db.js',
   'app.js',
   'manifest.webmanifest',
   'icons/icon-192.png',
