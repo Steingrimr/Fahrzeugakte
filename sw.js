@@ -5,7 +5,7 @@
 //
 // Bei Änderungen an den App-Dateien die Versionsnummer erhöhen,
 // damit alte Kopien aufgeräumt werden.
-const CACHE_NAME = 'fahrzeugakte-v0.3.0';
+const CACHE_NAME = 'fahrzeugakte-v0.4.0';
 
 const APP_DATEIEN = [
   './',

@@ -3,6 +3,7 @@
 //   1) Navigation zwischen den Bereichen (Start, Ereignisse, ...)
 //   2) Bereich "Start": Fahrzeug anzeigen
 //   3) Bereich "Fahrzeug": Formular zum Anlegen/Bearbeiten
+//   3b) Einstellungen: Kategorien verwalten
 //   4) Technik: Online-Anzeige, Offline-Modus, Installieren
 
 // ---------------------------------------------------------
@@ -37,6 +38,7 @@ function zeigeBereich() {
   // Inhalte des Bereichs frisch laden
   if (ziel === 'start') zeigeStart();
   if (ziel === 'fahrzeug') fuelleFahrzeugFormular();
+  if (ziel === 'einstellungen') zeigeKategorien();
 }
 window.addEventListener('hashchange', zeigeBereich);
 
@@ -106,6 +108,125 @@ formular.addEventListener('submit', async (ereignis) => {
 
   await speichern('fahrzeuge', fz);
   location.hash = '#start';
+});
+
+// ---------------------------------------------------------
+// 3b) Einstellungen: Kategorien verwalten
+// ---------------------------------------------------------
+const katListe = document.getElementById('kategorien-liste');
+const katFormular = document.getElementById('kategorie-formular');
+const katNeuKnopf = document.getElementById('kategorie-neu');
+const katLoeschenKnopf = document.getElementById('kategorie-loeschen');
+const katHinweis = document.getElementById('kategorie-hinweis');
+let katInBearbeitung = null; // die Kategorie, die gerade im Formular ist (null = neu)
+
+async function alleKategorien() {
+  const kategorien = await alleHolen('kategorien');
+  return kategorien.sort((a, b) => a.reihenfolge - b.reihenfolge);
+}
+
+// Liste der Kategorien aufbauen – jede Zeile ist antippbar
+async function zeigeKategorien() {
+  const kategorien = await alleKategorien();
+  katListe.innerHTML = '';
+  for (const kat of kategorien) {
+    const zeile = document.createElement('li');
+    const knopf = document.createElement('button');
+    knopf.type = 'button';
+
+    const text = document.createElement('span');
+    text.textContent = kat.name;
+    if (kat.beschreibung) {
+      const zusatz = document.createElement('span');
+      zusatz.className = 'leise';
+      zusatz.textContent = kat.beschreibung;
+      text.appendChild(zusatz);
+    }
+    const pfeil = document.createElement('span');
+    pfeil.className = 'pfeil';
+    pfeil.textContent = '›';
+
+    knopf.append(text, pfeil);
+    knopf.addEventListener('click', () => oeffneKategorieFormular(kat));
+    zeile.appendChild(knopf);
+    katListe.appendChild(zeile);
+  }
+  schliesseKategorieFormular();
+}
+
+// Formular öffnen: mit einer Kategorie = bearbeiten, ohne = neu anlegen
+function oeffneKategorieFormular(kat) {
+  katInBearbeitung = kat || null;
+  document.getElementById('kategorie-formular-titel').textContent =
+    kat ? 'Kategorie bearbeiten' : 'Neue Kategorie';
+  katFormular.elements.name.value = kat ? kat.name : '';
+  katFormular.elements.beschreibung.value = kat ? kat.beschreibung : '';
+  katLoeschenKnopf.hidden = !kat; // Löschen gibt es nur beim Bearbeiten
+  katHinweis.hidden = true;
+  katFormular.hidden = false;
+  katNeuKnopf.hidden = true;
+  katFormular.elements.name.focus();
+}
+
+function schliesseKategorieFormular() {
+  katInBearbeitung = null;
+  katFormular.hidden = true;
+  katNeuKnopf.hidden = false;
+}
+
+function zeigeKategorieHinweis(text) {
+  katHinweis.textContent = text;
+  katHinweis.hidden = false;
+}
+
+katNeuKnopf.addEventListener('click', () => oeffneKategorieFormular(null));
+document.getElementById('kategorie-abbrechen').addEventListener('click', schliesseKategorieFormular);
+
+// Speichern: neue Kategorie anlegen oder bestehende ändern
+katFormular.addEventListener('submit', async (ereignis) => {
+  ereignis.preventDefault();
+  const name = katFormular.elements.name.value.trim();
+  const beschreibung = katFormular.elements.beschreibung.value.trim();
+  if (!name) return;
+
+  const kategorien = await alleKategorien();
+  // Gleicher Name schon vorhanden? (Groß-/Kleinschreibung egal)
+  const doppelt = kategorien.find((k) =>
+    k.name.toLowerCase() === name.toLowerCase() && (!katInBearbeitung || k.id !== katInBearbeitung.id)
+  );
+  if (doppelt) {
+    zeigeKategorieHinweis(`Es gibt schon eine Kategorie „${doppelt.name}“.`);
+    return;
+  }
+
+  const kat = katInBearbeitung || {
+    // neue Kategorie kommt ans Ende der Liste
+    reihenfolge: kategorien.reduce((max, k) => Math.max(max, k.reihenfolge), -1) + 1
+  };
+  kat.name = name;
+  kat.beschreibung = beschreibung;
+  await speichern('kategorien', kat);
+  zeigeKategorien();
+});
+
+// Löschen: nur, wenn kein Ereignis diese Kategorie benutzt
+katLoeschenKnopf.addEventListener('click', async () => {
+  const kat = katInBearbeitung;
+  if (!kat) return;
+
+  const ereignisse = await alleHolen('ereignisse');
+  const anzahl = ereignisse.filter((e) => e.kategorieId === kat.id).length;
+  if (anzahl > 0) {
+    zeigeKategorieHinweis(
+      `„${kat.name}“ wird von ${anzahl} ${anzahl === 1 ? 'Ereignis' : 'Ereignissen'} benutzt ` +
+      'und kann deshalb nicht gelöscht werden. Du kannst sie aber umbenennen.'
+    );
+    return;
+  }
+
+  if (!confirm(`Kategorie „${kat.name}“ wirklich löschen?`)) return;
+  await loeschen('kategorien', kat.id);
+  zeigeKategorien();
 });
 
 // ---------------------------------------------------------

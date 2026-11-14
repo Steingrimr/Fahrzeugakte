@@ -95,14 +95,38 @@
 
     <!-- ===== Bereich: Einstellungen ===== -->
     <section data-bereich="einstellungen" hidden>
+      <!-- Kategorien verwalten -->
+      <div class="karte">
+        <h3>Kategorien</h3>
+        <ul id="kategorien-liste" class="zeilen"></ul>
+        <button id="kategorie-neu" class="knopf knopf-zweit" type="button">+ Neue Kategorie</button>
+
+        <!-- Formular zum Anlegen/Bearbeiten, erscheint erst beim Klick -->
+        <form id="kategorie-formular" class="formular unterformular" hidden>
+          <h3 id="kategorie-formular-titel">Neue Kategorie</h3>
+          <label>Name *
+            <input name="name" required maxlength="40">
+          </label>
+          <label>Beschreibung
+            <input name="beschreibung" maxlength="120" placeholder="Wofür ist diese Kategorie?">
+          </label>
+          <p id="kategorie-hinweis" class="hinweis" hidden></p>
+          <div class="knopfreihe">
+            <button type="submit" class="knopf">Speichern</button>
+            <button type="button" id="kategorie-abbrechen" class="knopf knopf-zweit">Abbrechen</button>
+            <button type="button" id="kategorie-loeschen" class="knopf knopf-gefahr">Löschen</button>
+          </div>
+        </form>
+      </div>
+
       <div class="karte status">
-        <h2>Einstellungen</h2>
-        <p class="leise">Kategorien, Vorwarnung und Backup kommen hier bald dazu.</p>
+        <h3>Technik</h3>
+        <p class="leise">Vorwarnung und Backup kommen hier bald dazu.</p>
         <p>Verbindung: <strong id="online-status">…</strong></p>
         <p>Offline-Modus: <strong id="sw-status">…</strong></p>
         <button id="installieren" class="knopf" hidden>App installieren</button>
       </div>
-      <p class="fuss">Version <span id="version">0.3.0</span> · Daten bleiben nur auf diesem Gerät</p>
+      <p class="fuss">Version <span id="version">0.4.0</span> · Daten bleiben nur auf diesem Gerät</p>
     </section>
 
   </main>
