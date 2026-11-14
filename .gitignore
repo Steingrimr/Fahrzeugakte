@@ -1,0 +1,34 @@
+# ---------------------------------------------------------
+# Datenschutz: private Daten gehören NICHT ins (öffentliche) Repo
+# ---------------------------------------------------------
+
+# Ordner für alles Private (Excel, Exporte, Belege, Fotos)
+privat/
+
+# Excel- und Tabellendateien (z. B. Fahrzeughistorie.xlsx)
+*.xlsx
+*.xlsm
+*.xls
+*.ods
+*.csv
+~$*
+
+# JSON-Exporte / Backups aus der App
+*.json
+!.claude/launch.json
+
+# Belege, Scans und Fotos
+*.pdf
+*.jpg
+*.jpeg
+*.heic
+*.webp
+belege/
+fotos/
+
+# Kalenderdateien (enthalten persönliche Termine)
+*.ics
+
+# Windows-Systemdateien
+Thumbs.db
+desktop.ini

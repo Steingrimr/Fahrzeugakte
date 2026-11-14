@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrzeugakte</title>
+  <meta name="description" content="Die Historie meines Fahrzeugs: Wartung, Reparaturen, Umbauten, Kosten.">
+  <meta name="theme-color" content="#2f4a2b">
+
+  <!-- PWA: Manifest und Icons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Fahrzeugakte">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="kopf">
+    <h1>Fahrzeugakte</h1>
+  </header>
+
+  <main class="inhalt">
+    <section class="karte">
+      <p class="gruss">Hallo Jeep! 👋</p>
+      <h2>Jeep Wrangler</h2>
+      <p class="unterzeile">Auslieferung 2018</p>
+    </section>
+
+    <section class="karte status">
+      <p>Verbindung: <strong id="online-status">…</strong></p>
+      <p>Offline-Modus: <strong id="sw-status">…</strong></p>
+      <button id="installieren" class="knopf" hidden>App installieren</button>
+    </section>
+  </main>
+
+  <footer class="fuss">
+    Version <span id="version">0.1.0</span> · Daten bleiben nur auf diesem Gerät
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
