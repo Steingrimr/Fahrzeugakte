@@ -1,7 +1,11 @@
 // Service Worker – sorgt dafür, dass die App offline startet.
-// WICHTIG: Bei jeder Änderung an den App-Dateien die Versionsnummer
-// erhöhen, damit Handy und Browser die neue Version laden.
-const CACHE_NAME = 'fahrzeugakte-v0.2.0';
+//
+// Strategie "Netz zuerst": Mit Internet holt die App immer die neueste
+// Fassung (und legt sie als Kopie ab). Ohne Internet nimmt sie die Kopie.
+//
+// Bei Änderungen an den App-Dateien die Versionsnummer erhöhen,
+// damit alte Kopien aufgeräumt werden.
+const CACHE_NAME = 'fahrzeugakte-v0.3.0';
 
 const APP_DATEIEN = [
   './',
@@ -16,7 +20,7 @@ const APP_DATEIEN = [
   'icons/apple-touch-icon.png'
 ];
 
-// Beim Installieren: alle App-Dateien zwischenspeichern
+// Beim Installieren: alle App-Dateien als Kopie ablegen
 self.addEventListener('install', (ereignis) => {
   ereignis.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_DATEIEN))
@@ -24,7 +28,7 @@ self.addEventListener('install', (ereignis) => {
   self.skipWaiting();
 });
 
-// Beim Aktivieren: alte Versionen aus dem Zwischenspeicher löschen
+// Beim Aktivieren: alte Versionen der Kopien löschen
 self.addEventListener('activate', (ereignis) => {
   ereignis.waitUntil(
     caches.keys().then((namen) =>
@@ -34,10 +38,24 @@ self.addEventListener('activate', (ereignis) => {
   self.clients.claim();
 });
 
-// Bei jeder Anfrage: erst im Zwischenspeicher schauen, sonst aus dem Netz holen
+// Bei jeder Anfrage: erst aus dem Netz holen, bei Fehler die Kopie nehmen
 self.addEventListener('fetch', (ereignis) => {
-  if (ereignis.request.method !== 'GET') return;
+  const anfrage = ereignis.request;
+  if (anfrage.method !== 'GET' || new URL(anfrage.url).origin !== location.origin) return;
+
   ereignis.respondWith(
-    caches.match(ereignis.request).then((treffer) => treffer || fetch(ereignis.request))
+    fetch(anfrage)
+      .then((antwort) => {
+        if (antwort.ok) {
+          const kopie = antwort.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(anfrage, kopie));
+        }
+        return antwort;
+      })
+      .catch(() =>
+        caches.match(anfrage, { ignoreSearch: true })
+          // Seitenaufruf ohne passende Kopie: Startseite zeigen
+          .then((treffer) => treffer || (anfrage.mode === 'navigate' ? caches.match('./') : undefined))
+      )
   );
 });

@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Fahrzeugakte</title>
   <meta name="description" content="Die Historie meines Fahrzeugs: Wartung, Reparaturen, Umbauten, Kosten.">
   <meta name="theme-color" content="#2f4a2b">
@@ -18,31 +18,102 @@
 </head>
 <body>
   <header class="kopf">
-    <h1>Fahrzeugakte</h1>
+    <h1 id="kopf-titel">Fahrzeugakte</h1>
   </header>
 
   <main class="inhalt">
-    <section class="karte">
-      <p class="gruss">Hallo Jeep! 👋</p>
-      <h2>Jeep Wrangler</h2>
-      <p class="unterzeile">Auslieferung 2018</p>
+
+    <!-- ===== Bereich: Start ===== -->
+    <section data-bereich="start">
+      <!-- Wird angezeigt, solange noch kein Fahrzeug angelegt ist -->
+      <div id="kein-fahrzeug" class="karte" hidden>
+        <h2>Willkommen!</h2>
+        <p>Es ist noch kein Fahrzeug angelegt.</p>
+        <a class="knopf" href="#fahrzeug">Fahrzeug anlegen</a>
+      </div>
+
+      <!-- Wird angezeigt, wenn ein Fahrzeug da ist -->
+      <div id="fahrzeug-karte" class="karte" hidden>
+        <h2 id="fz-name"></h2>
+        <p id="fz-unterzeile" class="leise"></p>
+        <dl class="angaben">
+          <dt>Erstzulassung</dt><dd id="fz-erstzulassung"></dd>
+          <dt>FIN</dt><dd id="fz-fin"></dd>
+        </dl>
+        <p id="fz-notizen" class="notizen"></p>
+        <a class="knopf knopf-zweit" href="#fahrzeug">Bearbeiten</a>
+      </div>
     </section>
 
-    <section class="karte">
-      <h3>Gespeicherte Kategorien</h3>
-      <ul id="kategorien-liste" class="liste"><li>wird geladen …</li></ul>
+    <!-- ===== Bereich: Fahrzeug bearbeiten ===== -->
+    <section data-bereich="fahrzeug" hidden>
+      <form id="fahrzeug-formular" class="karte formular">
+        <h2 id="formular-titel">Fahrzeug</h2>
+
+        <label>Name *
+          <input name="name" required placeholder="z. B. Mein Jeep">
+        </label>
+        <div class="zwei-spalten">
+          <label>Marke
+            <input name="marke">
+          </label>
+          <label>Modell
+            <input name="modell">
+          </label>
+        </div>
+        <div class="zwei-spalten">
+          <label>Baujahr
+            <input name="baujahr" type="number" inputmode="numeric" min="1900" max="2100">
+          </label>
+          <label>Erstzulassung
+            <input name="erstzulassung" type="date">
+          </label>
+        </div>
+        <label>FIN (optional)
+          <input name="fin" autocapitalize="characters" maxlength="17">
+        </label>
+        <label>Notizen
+          <textarea name="notizen" rows="4"></textarea>
+        </label>
+
+        <div class="knopfreihe">
+          <button type="submit" class="knopf">Speichern</button>
+          <a href="#start" class="knopf knopf-zweit">Abbrechen</a>
+        </div>
+      </form>
     </section>
 
-    <section class="karte status">
-      <p>Verbindung: <strong id="online-status">…</strong></p>
-      <p>Offline-Modus: <strong id="sw-status">…</strong></p>
-      <button id="installieren" class="knopf" hidden>App installieren</button>
+    <!-- ===== Bereich: Ereignisse (kommt in Schritt 5) ===== -->
+    <section data-bereich="ereignisse" hidden>
+      <div class="karte"><h2>Ereignisse</h2><p class="leise">Kommt bald.</p></div>
     </section>
+
+    <!-- ===== Bereich: Servicestufen (kommt in Schritt 4) ===== -->
+    <section data-bereich="stufen" hidden>
+      <div class="karte"><h2>Servicestufen</h2><p class="leise">Kommt bald.</p></div>
+    </section>
+
+    <!-- ===== Bereich: Einstellungen ===== -->
+    <section data-bereich="einstellungen" hidden>
+      <div class="karte status">
+        <h2>Einstellungen</h2>
+        <p class="leise">Kategorien, Vorwarnung und Backup kommen hier bald dazu.</p>
+        <p>Verbindung: <strong id="online-status">…</strong></p>
+        <p>Offline-Modus: <strong id="sw-status">…</strong></p>
+        <button id="installieren" class="knopf" hidden>App installieren</button>
+      </div>
+      <p class="fuss">Version <span id="version">0.3.0</span> · Daten bleiben nur auf diesem Gerät</p>
+    </section>
+
   </main>
 
-  <footer class="fuss">
-    Version <span id="version">0.2.0</span> · Daten bleiben nur auf diesem Gerät
-  </footer>
+  <!-- ===== Navigation unten ===== -->
+  <nav class="navigation">
+    <a href="#start" data-ziel="start"><span>🏠</span>Start</a>
+    <a href="#ereignisse" data-ziel="ereignisse"><span>📋</span>Ereignisse</a>
+    <a href="#stufen" data-ziel="stufen"><span>🔧</span>Service</a>
+    <a href="#einstellungen" data-ziel="einstellungen"><span>⚙️</span>Einstellungen</a>
+  </nav>
 
   <script src="db.js"></script>
   <script src="app.js"></script>
